@@ -3,7 +3,7 @@ from homeassistant.const import Platform
 
 DOMAIN = "altilia"
 DEFAULT_PORT = 80
-DEFAULT_SCAN_INTERVAL = 10
+DEFAULT_SCAN_INTERVAL = 30 # Refresh rate according to docs
 
 STATUS_PATH = "/api/v1/state"
 INFO_PATH = "/api/v1/info"
