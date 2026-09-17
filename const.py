@@ -5,7 +5,7 @@ DOMAIN = "altilia"
 DEFAULT_PORT = 80
 DEFAULT_SCAN_INTERVAL = 10
 
-STATUS_PATH = "/api/v1/status"
+STATUS_PATH = "/api/v1/state"
 INFO_PATH = "/api/v1/info"
 
 CONF_HOST = "host"
