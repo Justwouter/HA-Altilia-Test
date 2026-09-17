@@ -1,0 +1,17 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Altilia EMS",
+        "description": "Connect to the Altilia dongle HTTP API.",
+        "data": {
+          "host": "Host or IP address",
+          "port": "Port"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Unable to connect to the Altilia API."
+    }
+  }
+}
