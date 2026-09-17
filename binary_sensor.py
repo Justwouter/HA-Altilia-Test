@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable, Any
+from typing import Any, Callable
 
 from homeassistant.components.binary_sensor import BinarySensorDeviceClass, BinarySensorEntity
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-
+from homeassistant.const import (
+    EntityCategory,
+)
 from . import AltiliaCoordinator
 from .const import DOMAIN
 
@@ -17,7 +19,7 @@ class BinaryDescription:
     name: str
     device_class: BinarySensorDeviceClass | None
     value_fn: Callable[[dict], Any]
-    entity_category: str | None = None
+    entity_category: EntityCategory | None = None
 
 
 def get(data: dict, *path: str, default=None):
@@ -32,11 +34,11 @@ def get(data: dict, *path: str, default=None):
 DESCRIPTIONS = [
     BinaryDescription("battery_charging", "Battery charging", BinarySensorDeviceClass.BATTERY_CHARGING, lambda d: get(d, "battery", "charging")),
     BinaryDescription("battery_discharging", "Battery discharging", None, lambda d: get(d, "battery", "discharging")),
-    BinaryDescription("battery_floor_tripped", "Battery SOC floor tripped", None, lambda d: get(d, "battery", "floor_tripped"), "diagnostic"),
-    BinaryDescription("inverter_fault", "Inverter fault", BinarySensorDeviceClass.PROBLEM, lambda d: get(d, "inverter", "fault"), "diagnostic"),
-    BinaryDescription("fault", "Active fault", BinarySensorDeviceClass.PROBLEM, lambda d: get(d, "faults", "any"), "diagnostic"),
-    BinaryDescription("modbus_online", "Modbus online", BinarySensorDeviceClass.CONNECTIVITY, lambda d: get(d, "online", "modbus"), "diagnostic"),
-    BinaryDescription("server_online", "Server online", BinarySensorDeviceClass.CONNECTIVITY, lambda d: get(d, "online", "server"), "diagnostic"),
+    BinaryDescription("battery_floor_tripped", "Battery SOC floor tripped", None, lambda d: get(d, "battery", "floor_tripped"), EntityCategory.DIAGNOSTIC),
+    BinaryDescription("inverter_fault", "Inverter fault", BinarySensorDeviceClass.PROBLEM, lambda d: get(d, "inverter", "fault"), EntityCategory.DIAGNOSTIC),
+    BinaryDescription("fault", "Active fault", BinarySensorDeviceClass.PROBLEM, lambda d: get(d, "faults", "any"), EntityCategory.DIAGNOSTIC),
+    BinaryDescription("modbus_online", "Modbus online", BinarySensorDeviceClass.CONNECTIVITY, lambda d: get(d, "online", "modbus"), EntityCategory.DIAGNOSTIC),
+    BinaryDescription("server_online", "Server online", BinarySensorDeviceClass.CONNECTIVITY, lambda d: get(d, "online", "server"), EntityCategory.DIAGNOSTIC),
 ]
 
 
@@ -48,7 +50,11 @@ class AltiliaBinarySensor(CoordinatorEntity[AltiliaCoordinator], BinarySensorEnt
         self._attr_has_entity_name = True
         self._attr_name = description.name
         self._attr_device_class = description.device_class
-        self._attr_entity_category = description.entity_category
+        self._attr_entity_category = (
+            EntityCategory(description.entity_category)
+            if description.entity_category is not None
+            else None
+        )
 
     @property
     def device_info(self) -> DeviceInfo:

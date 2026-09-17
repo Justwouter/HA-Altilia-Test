@@ -1,3 +1,6 @@
+from homeassistant.const import Platform
+
+
 DOMAIN = "altilia"
 DEFAULT_PORT = 80
 DEFAULT_SCAN_INTERVAL = 10
@@ -9,6 +12,6 @@ CONF_HOST = "host"
 CONF_PORT = "port"
 CONF_SCAN_INTERVAL = "scan_interval"
 
-PLATFORMS = ["sensor", "binary_sensor"]
+PLATFORMS = [Platform.SENSOR, Platform.BINARY_SENSOR]
 
 ATTR_FAULTS = "faults"

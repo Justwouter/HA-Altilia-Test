@@ -3,9 +3,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Callable
 
-from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
+from homeassistant.components.sensor import (
+    SensorDeviceClass,
+    SensorEntity,
+    SensorEntityDescription,
+)
 from homeassistant.const import (
     PERCENTAGE,
+    EntityCategory,
     UnitOfElectricCurrent,
     UnitOfElectricPotential,
     UnitOfEnergy,
@@ -28,7 +33,7 @@ class Description:
     device_class: SensorDeviceClass | None
     state_class: str | None
     value_fn: Callable[[dict], Any]
-    entity_category: str | None = None
+    entity_category: EntityCategory | None = None
     enabled_by_default: bool = True
 
 
@@ -58,8 +63,8 @@ DESCRIPTIONS = [
     Description("solar_total", "Solar energy total", UnitOfEnergy.KILO_WATT_HOUR, SensorDeviceClass.ENERGY, "total_increasing", lambda d: get(d, "energy_total_kwh", "solar")),
     Description("load_total", "Load energy total", UnitOfEnergy.KILO_WATT_HOUR, SensorDeviceClass.ENERGY, "total_increasing", lambda d: get(d, "energy_total_kwh", "load")),
     Description("inverter_total", "Inverter energy total", UnitOfEnergy.KILO_WATT_HOUR, SensorDeviceClass.ENERGY, "total_increasing", lambda d: get(d, "energy_total_kwh", "inverter")),
-    Description("uptime", "Uptime", "s", None, "measurement", lambda d: get(d, "uptime_s"), entity_category="diagnostic"),
-    Description("active_faults", "Active faults", None, None, "measurement", lambda d: get(d, "faults", "count", default=0), entity_category="diagnostic"),
+    Description("uptime", "Uptime", "s",None, "measurement", lambda d: get(d, "uptime_s"), entity_category=EntityCategory.DIAGNOSTIC),
+    Description("active_faults", "Active faults", None, None, "measurement", lambda d: get(d, "faults", "count", default=0), entity_category=EntityCategory.DIAGNOSTIC),
     Description("battery_state", "Battery state", None, None, None, lambda d: get(d, "battery", "state")),
     Description("inverter_run_state", "Inverter run state", None, None, None, lambda d: get(d, "inverter", "run_state")),
     Description("ems_mode", "EMS mode", None, None, None, lambda d: get(d, "inverter", "ems_mode")),
@@ -69,7 +74,15 @@ DESCRIPTIONS = [
 class AltiliaSensor(CoordinatorEntity[AltiliaCoordinator], SensorEntity):
     def __init__(self, coordinator, description: Description, device_id: str):
         super().__init__(coordinator)
-        self.entity_description = description
+        self.entity_description = SensorEntityDescription(
+            key=description.key,
+            name=description.name,
+            native_unit_of_measurement=description.unit,
+            device_class=description.device_class,
+            state_class=description.state_class,
+            entity_category=description.entity_category,
+            entity_registry_enabled_default=description.enabled_by_default,
+        )
         self._description = description
         self._attr_unique_id = f"{device_id}_{description.key}"
         self._attr_has_entity_name = True

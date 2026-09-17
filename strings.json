@@ -12,6 +12,20 @@
     },
     "error": {
       "cannot_connect": "Unable to connect to the Altilia API."
-    }
+    },
+    "abort": {
+      "already_configured": "This Altilia device is already configured."
+    },
+    "options": {
+      "step": {
+        "init": {
+          "title": "Altilia EMS options",
+          "data": {
+            "scan_interval": "Polling interval (seconds)"
+          }
+        }
+      }
+    },
+    "selector": {}
   }
 }
