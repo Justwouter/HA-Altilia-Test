@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import voluptuous as vol
+import logging
 from homeassistant import config_entries
 from homeassistant.const import CONF_HOST, CONF_PORT
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -8,6 +9,7 @@ from aiohttp import ClientTimeout
 
 from .const import DEFAULT_PORT, DEFAULT_SCAN_INTERVAL, DOMAIN, INFO_PATH, STATUS_PATH, CONF_SCAN_INTERVAL
 
+_LOGGER = logging.getLogger(__name__)
 
 class AltiliaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
@@ -50,8 +52,9 @@ class AltiliaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         CONF_PORT: port,
                     },
                 )
-            except Exception:
+            except Exception as e:
                 errors["base"] = "cannot_connect"
+                _LOGGER.error(e)
 
         schema = vol.Schema(
             {
